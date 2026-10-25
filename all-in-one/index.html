@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><meta name="description" content="A 90-second animated story: customers buy on vitalcare.mx, and the website and the VitalCare app share one account, orders and readings."><meta property="og:title" content="Everything in VitalCare, in One Story"><meta property="og:description" content="A 90-second animated story: customers buy on vitalcare.mx, and the website and the VitalCare app share one account, orders and readings."><meta property="og:type" content="website">
+<title>VitalCare All-in-One Story</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a dark "screening room" stage (same in both themes) where light phone and laptop screens play a 10-scene story; caption left, devices right; chapter list below doubles as the transcript. */
+:root{
+  --bg:#EEF3F4; --ink:#12232A; --muted:#56676E; --line:#D3DEE1; --accent:#0A7480; --surface:#FFFFFF;
+  --stage:#0F2229; --stage-2:#16303A; --stage-ink:#EAF2F3; --stage-muted:#A3B8BE; --stage-line:#2A4852; --glow:#4EC3E0;
+  --device:#0A1418; --scr:#FFFFFF; --scr-ink:#1A2A30; --scr-muted:#6B7B80; --scr-line:#E2E9EB; --scr-soft:#F2F6F7; --scr-aqua:#E3F6FB;
+  --vc-red:#D6001C; --vc-aqua:#4EC3E0; --vc-slate:#4A7D90; --ok:#1F9D63; --bad:#E5484D;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0A1418; --ink:#E4EDEF; --muted:#93A7AE; --line:#22373E; --accent:#4CC3CC; --surface:#11222A; color-scheme:dark; } }
+:root[data-theme="dark"]{ --bg:#0A1418; --ink:#E4EDEF; --muted:#93A7AE; --line:#22373E; --accent:#4CC3CC; --surface:#11222A; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.12;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase}
+
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px 24px}
+.top .eyebrow{color:var(--muted)}
+.top h1{font-size:clamp(1.9rem,4.6vw,3rem);font-weight:700;letter-spacing:-.015em;margin-top:6px}
+.top p{color:var(--muted);max-width:62ch;margin-top:8px}
+.lang{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 16px;font-size:.9rem;cursor:pointer}
+.lang:hover{border-color:var(--accent)}
+
+.player{background:var(--stage);color:var(--stage-ink);border-radius:22px;overflow:hidden;box-shadow:0 30px 70px -40px rgba(5,20,25,.7)}
+.stage{display:grid;position:relative;background:radial-gradient(1200px 500px at 75% 40%, var(--stage-2), var(--stage))}
+.scene{grid-area:1/1;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:center;padding:40px 44px;min-height:580px;visibility:hidden;opacity:0;transition:opacity .45s ease,visibility 0s linear .45s}
+.scene.active{visibility:visible;opacity:1;transition:opacity .45s ease}
+.cap{display:grid;gap:14px;align-content:center;min-width:0}
+.cap .eyebrow{color:var(--glow)}
+.cap h2{font-size:clamp(1.55rem,3.1vw,2.35rem);font-weight:700;letter-spacing:-.01em}
+.cap p{color:var(--stage-muted);font-size:1.05rem;max-width:44ch}
+.vis{position:relative;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:22px;min-width:0;min-height:500px}
+@media (max-width:860px){
+  .scene{grid-template-columns:1fr;padding:26px 20px 22px;gap:18px;min-height:0;display:none}
+  .scene.active{display:grid}
+  .vis{min-height:0}
+}
+
+.anim{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.anim.pop{transform:scale(.86)}
+.anim.left{transform:translateX(-22px)}
+.anim.in{opacity:1;transform:none}
+.layer{position:absolute;inset:26px 0 0 0;background:var(--scr);display:flex;flex-direction:column}
+.layer.slide{transform:translateX(102%);transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.layer.fade{opacity:0;transition:opacity .35s ease}
+.layer.in{transform:none;opacity:1}
+.tap{position:absolute;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:rgba(78,195,224,.35);border:2px solid var(--vc-aqua);opacity:0;pointer-events:none;z-index:5}
+.tap.in{animation:tap .9s ease-out forwards}
+@keyframes tap{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(.85)}100%{opacity:0;transform:scale(1.7)}}
+.typing::after{content:"";display:inline-block;width:1.5px;height:1em;background:currentColor;margin-left:1px;vertical-align:-2px;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* phone */
+.phone{width:min(244px,70vw);height:488px;border-radius:38px;background:var(--device);padding:10px;box-shadow:0 30px 60px -22px rgba(0,0,0,.75),inset 0 0 0 1.5px #2b3a40;flex:none;position:relative}
+.phone.sm{width:min(206px,62vw);height:412px;border-radius:32px;padding:8px}
+.phone.sm .screen{border-radius:25px;font-size:11px}
+.screen{position:relative;width:100%;height:100%;border-radius:29px;background:var(--scr);color:var(--scr-ink);overflow:hidden;font-size:12px;line-height:1.4;display:flex;flex-direction:column}
+.sbar{height:26px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font:600 10px var(--body);color:var(--scr-ink);position:relative}
+.sbar::after{content:"";position:absolute;left:50%;top:6px;width:64px;height:16px;margin-left:-32px;border-radius:10px;background:var(--device)}
+.vchead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;border-bottom:1px solid var(--scr-line);flex:none}
+.wm{font-family:var(--display);font-weight:700;font-size:15px;color:var(--vc-slate);letter-spacing:-.01em}
+.wm b{color:var(--vc-red);font-weight:700}
+.menu{width:16px;height:10px;border-top:2px solid var(--scr-ink);border-bottom:2px solid var(--scr-ink);position:relative}
+.menu::after{content:"";position:absolute;left:0;right:0;top:2px;border-top:2px solid var(--scr-ink)}
+.cart{position:relative;width:20px;height:18px;display:inline-grid;place-items:center}
+.cart svg{width:18px;height:18px;fill:none;stroke:var(--scr-ink);stroke-width:2}
+.cart .badge{position:absolute;right:-6px;top:-6px;width:15px;height:15px;border-radius:50%;background:var(--vc-red);color:#fff;font:700 9px var(--body);display:grid;place-items:center}
+.pad{padding:12px 14px;display:grid;gap:10px;align-content:start}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--scr-line);border-radius:22px;padding:9px 12px;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.search svg{flex:none;width:14px;height:14px;fill:none;stroke:var(--scr-muted);stroke-width:2}
+.sugg{display:flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--scr-line);color:var(--scr-ink)}
+.sugg svg{width:12px;height:12px;fill:none;stroke:var(--scr-muted);stroke-width:2;flex:none}
+.btn{display:block;text-align:center;border-radius:10px;padding:10px;font-weight:600;font-size:12.5px}
+.btn.red{background:var(--vc-red);color:#fff}
+.btn.dark{background:var(--scr-ink);color:#fff}
+.btn.sm{padding:7px 10px;font-size:11.5px}
+.muted-s{color:var(--scr-muted)}
+.h-s{font-weight:600;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:3px 9px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.chip.src{background:var(--scr-aqua);color:#0b6f8a;border:1px solid #bfe9f5}
+.chip.src.glow.in{box-shadow:0 0 0 4px rgba(78,195,224,.35)}
+.chip.ok{background:#E3F5EC;color:var(--ok)}
+.chip.grey{background:var(--scr-soft);color:var(--scr-muted)}
+.chip.rev{background:#FFF3DA;color:#9A5B00}
+.chip.wrap{white-space:normal;line-height:1.3}
+.chip svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.4;flex:none}
+
+.chat{display:flex;flex-direction:column;gap:9px;padding:12px}
+.bub{max-width:88%;padding:9px 11px;border-radius:14px;font-size:12px;line-height:1.42}
+.bub.me{align-self:flex-end;background:var(--vc-slate);color:#fff;border-bottom-right-radius:4px}
+.bub.ai{align-self:flex-start;background:var(--scr-soft);border-bottom-left-radius:4px}
+.who{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--scr-line);font-weight:600;flex:none}
+.dot-ai{width:22px;height:22px;border-radius:50%;background:conic-gradient(from 200deg,var(--vc-aqua),var(--vc-slate),var(--vc-aqua));flex:none}
+.dot-vc{width:22px;height:22px;border-radius:50%;background:var(--vc-red);color:#fff;display:grid;place-items:center;font:700 11px var(--display);flex:none}
+
+.hero{height:118px;border-radius:12px;background:linear-gradient(135deg,var(--scr-aqua),#F7FBFC);display:grid;place-items:center;position:relative}
+.monitor{width:96px;height:70px;border-radius:14px;background:#fff;box-shadow:0 6px 14px rgba(20,40,50,.15);display:grid;place-items:center;position:relative;flex:none}
+.monitor.mini-m{width:54px;height:40px;border-radius:9px}
+.monitor.mini-m .lcd{width:36px;height:18px;font-size:8px}
+.monitor.mini-m::after{display:none}
+.lcd{width:66px;height:34px;border-radius:6px;background:#CFE6D8;color:#183a2a;font:500 13px var(--mono);display:grid;place-items:center}
+.monitor::after{content:"";position:absolute;bottom:7px;width:12px;height:12px;border-radius:50%;background:var(--vc-slate)}
+.prod{display:flex;gap:10px;align-items:center;border:1px solid var(--scr-line);border-radius:12px;padding:8px;background:#fff}
+.prod > div{min-width:0}
+
+.optrow{display:flex;align-items:center;gap:8px;border:1.5px solid var(--scr-line);border-radius:10px;padding:7px 9px;font-size:11.5px;transition:border-color .3s,background .3s}
+.optrow i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--scr-muted);flex:none;transition:all .3s}
+.optrow.pick.in{border-color:var(--vc-aqua);background:var(--scr-aqua)}
+.optrow.pick.in i{border:4px solid var(--vc-slate)}
+.check{display:flex;align-items:center;gap:8px;font-size:11.5px}
+.check i{width:14px;height:14px;border-radius:4px;border:1.5px solid var(--scr-muted);display:grid;place-items:center;flex:none;transition:all .3s}
+.check.in i{background:var(--vc-slate);border-color:var(--vc-slate)}
+.check.in i::after{content:"";width:6px;height:3px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+
+.card{background:var(--stage-2);border:1px solid var(--stage-line);border-radius:16px;padding:14px 16px;display:grid;gap:6px;color:var(--stage-ink)}
+.card .k{font-size:.78rem;color:var(--stage-muted)}
+.card .v{font-family:var(--mono);font-size:1.6rem;font-weight:500;font-variant-numeric:tabular-nums}
+.lightcard{background:var(--scr);color:var(--scr-ink);border-radius:16px;padding:14px 16px;display:grid;gap:6px;box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
+.persona{display:flex;gap:12px;align-items:center}
+.ava{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#F2B7A0,#E58E74);display:grid;place-items:center;font:700 18px var(--display);color:#5a2414;flex:none}
+.side{display:grid;gap:14px;align-content:center;max-width:250px}
+.lbl-under{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--stage-muted);text-align:center}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills span{background:var(--stage);border:1px solid var(--stage-line);border-radius:99px;padding:4px 10px;font-size:.82rem}
+
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%;max-width:640px}
+@media (max-width:560px){.trio{grid-template-columns:1fr}}
+.mini{background:var(--scr);color:var(--scr-ink);border-radius:18px;height:280px;position:relative;overflow:hidden;display:flex;flex-direction:column;font-size:11.5px;box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
+@media (max-width:860px){.mini{height:220px}}
+.mini .vchead{padding:7px 12px}
+.mini .wm{font-size:13px}
+.spin{width:30px;height:30px;border-radius:50%;border:3px solid var(--scr-line);border-top-color:var(--vc-slate);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.center{flex:1;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;padding:10px}
+.timer{font:500 22px var(--mono);color:var(--bad);font-variant-numeric:tabular-nums}
+.e404{font:700 34px var(--display);color:var(--bad)}
+.trio-col{display:grid;gap:8px}
+.exit svg{width:40px;height:40px;fill:none;stroke:var(--bad);stroke-width:2}
+
+.spinning svg{animation:spin 1.6s linear infinite}
+.flow{width:70px;height:4px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--glow) 0 10px,transparent 10px 18px);background-size:36px 4px}
+.flow.in{animation:flow 1s linear infinite}
+@keyframes flow{to{background-position:36px 0}}
+
+.box{width:150px;height:170px;border-radius:14px;background:linear-gradient(160deg,#F6F1EA,#E8DFD2);color:#3b3127;display:grid;place-items:center;align-content:center;gap:8px;position:relative;overflow:hidden;box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
+.box .brand{font:700 14px var(--display);color:var(--vc-slate)}
+.qr{width:74px;height:74px;background:#fff;padding:6px;border-radius:6px;position:relative}
+.qr svg{width:100%;height:100%;display:block}
+.scanline{position:absolute;left:4px;right:4px;top:8px;height:2px;background:var(--vc-red);box-shadow:0 0 8px var(--vc-red);opacity:0}
+.scanline.in{opacity:1;animation:scan 1.2s ease-in-out infinite alternate}
+@keyframes scan{to{top:64px}}
+.beat path{fill:none;stroke:var(--vc-red);stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.6s ease-out}
+.beat.in path{stroke-dashoffset:0}
+.reading{font:500 30px var(--mono);letter-spacing:-.02em;color:var(--scr-ink)}
+
+/* laptop */
+.laptop{width:min(372px,86vw);flex:none}
+.lscreen{background:var(--device);border-radius:14px 14px 4px 4px;padding:9px 9px 11px;box-shadow:0 30px 60px -26px rgba(0,0,0,.8)}
+.lview{background:var(--scr);border-radius:5px;height:248px;overflow:hidden;color:var(--scr-ink);font-size:11.5px;display:flex;flex-direction:column;position:relative}
+.lbar{display:flex;gap:5px;align-items:center;padding:6px 8px;background:var(--scr-soft);border-bottom:1px solid var(--scr-line);flex:none}
+.lbar i{width:7px;height:7px;border-radius:50%;background:#d3dbde;display:inline-block}
+.url{flex:1;background:#fff;border:1px solid var(--scr-line);border-radius:99px;padding:2px 10px;color:var(--scr-muted);font-size:10px;margin-left:6px}
+.lbase{height:12px;background:linear-gradient(#cdd6d9,#9fb0b5);border-radius:0 0 14px 14px;margin:0 -18px}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--scr-line);border-radius:9px;padding:8px 10px}
+.trow > span:first-child{min-width:0}
+.steps{display:grid;gap:7px}
+.step{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--scr-muted)}
+.step i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--scr-line);flex:none;display:grid;place-items:center}
+.step.in{color:var(--scr-ink);font-weight:600}
+.step.in i{background:var(--ok);border-color:var(--ok)}
+.step.in i::after{content:"";width:6px;height:3px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.chart path.line{fill:none;stroke:var(--vc-slate);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420;transition:stroke-dashoffset 1.5s ease-out}
+.chart.in path.line{stroke-dashoffset:0}
+.chart .grid{stroke:var(--scr-line);stroke-width:1}
+.chart .lab{fill:var(--scr-muted);font:10px var(--mono)}
+.chart .last{fill:var(--vc-red);stroke:#fff;stroke-width:2;opacity:0;transition:opacity .4s}
+.chart .last.in{opacity:1}
+.sync{display:flex;align-items:center;gap:10px;justify-content:center;flex-basis:100%;color:var(--stage-muted);font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+.sync svg{width:18px;height:18px;fill:none;stroke:var(--glow);stroke-width:2}
+.notif{background:#fff;border:1px solid var(--scr-line);border-radius:12px;padding:9px 10px;display:flex;gap:8px;align-items:flex-start;box-shadow:0 6px 16px rgba(20,40,50,.12)}
+.notif > div{min-width:0}
+
+/* admin */
+.win{width:100%;max-width:640px;background:var(--scr);color:var(--scr-ink);border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -28px rgba(0,0,0,.8);font-size:12.5px;position:relative}
+.win .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--scr-soft);border-bottom:1px solid var(--scr-line);font-weight:600;font-size:11.5px;color:var(--scr-muted)}
+.win .bar i{width:9px;height:9px;border-radius:50%;background:#d8dfe1;display:inline-block}
+.win .body{display:grid;grid-template-columns:132px minmax(0,1fr)}
+.win nav{border-right:1px solid var(--scr-line);padding:12px 10px;display:grid;gap:4px;align-content:start;background:#FAFCFC}
+.win nav span{padding:6px 8px;border-radius:7px;color:var(--scr-muted)}
+.win nav span.on{background:var(--scr-aqua);color:#0b6f8a;font-weight:600}
+.win main{padding:14px 14px 60px;display:grid;gap:12px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kpi{border:1px solid var(--scr-line);border-radius:10px;padding:9px 10px;display:grid;gap:2px}
+.kpi .n{font:500 19px var(--mono);font-variant-numeric:tabular-nums}
+.kpi .t{font-size:10.5px;color:var(--scr-muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--scr-line);border-radius:10px;padding:9px 11px}
+.row .tt{min-width:0}
+.swap .b{display:none}
+.swap.in .a{display:none}
+.swap.in .b{display:inline-flex}
+.toast{position:absolute;right:16px;bottom:16px;background:var(--scr-ink);color:#fff;border-radius:10px;padding:9px 12px;font-size:12px;display:flex;gap:7px;align-items:center}
+.toast svg{width:14px;height:14px;fill:none;stroke:#7ee0ad;stroke-width:2.6}
+.ltoast{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--scr-ink);color:#fff;border-radius:99px;padding:7px 12px;font-size:11px;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.ltoast.anim{transform:translate(-50%,10px)}
+.ltoast.anim.in{transform:translate(-50%,0)}
+.ltoast svg{width:13px;height:13px;fill:none;stroke:#7ee0ad;stroke-width:2.6}
+@media (max-width:560px){.win .body{grid-template-columns:1fr}.win nav{display:none}}
+
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:560px}
+@media (max-width:480px){.tiles{grid-template-columns:1fr}}
+.tile{background:var(--stage-2);border:1px solid var(--stage-line);border-radius:16px;padding:16px;display:grid;gap:6px;align-content:start}
+.tile svg{width:26px;height:26px;fill:none;stroke:var(--glow);stroke-width:2}
+.tile b{font-family:var(--display);font-size:1.08rem;line-height:1.2}
+.tile span{color:var(--stage-muted);font-size:.88rem}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--glow);color:#06232b;border-radius:99px;padding:12px 20px;font-weight:600;text-decoration:none}
+.cta:hover{filter:brightness(1.06)}
+
+.bigplay{width:96px;height:96px;border-radius:50%;border:0;background:var(--glow);color:#06232b;display:grid;place-items:center;cursor:pointer;box-shadow:0 0 0 12px rgba(78,195,224,.15),0 0 0 26px rgba(78,195,224,.07);flex:none}
+.bigplay svg{width:34px;height:34px;fill:currentColor;margin-left:5px}
+.collage{position:relative;width:100%;max-width:560px;height:430px}
+.collage > *{position:absolute}
+.cphone{left:4%;top:0;transform:rotate(-5deg) scale(.82);transform-origin:top left}
+.startrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.startrow .eyebrow{color:var(--stage-muted)}
+@media (max-width:860px){.collage{height:350px}.cphone{transform:rotate(-5deg) scale(.66)}}
+
+.controls{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--stage-line);background:rgba(0,0,0,.18);flex-wrap:wrap}
+.cbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--stage-line);background:transparent;display:grid;place-items:center;cursor:pointer;flex:none;color:var(--stage-ink)}
+.cbtn:hover{border-color:var(--glow)}
+.cbtn svg{width:16px;height:16px;fill:currentColor}
+.cbtn.main{background:var(--glow);border-color:var(--glow);color:#06232b;width:44px;height:44px}
+.segs{flex:1;display:flex;gap:4px;min-width:160px}
+.seg{flex:1;height:22px;border:0;background:transparent;cursor:pointer;padding:9px 0;display:block}
+.seg i{display:block;height:4px;border-radius:2px;background:var(--stage-line);overflow:hidden;position:relative}
+.seg i b{position:absolute;inset:0;width:0;background:var(--glow)}
+.count{font-family:var(--mono);font-size:.8rem;color:var(--stage-muted);min-width:48px;text-align:right}
+
+.chapters{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.chapters button{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:12px;cursor:pointer;align-items:start}
+.chapters button:hover{border-color:var(--accent)}
+.chapters button.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chapters .n{font-family:var(--mono);font-size:.8rem;color:var(--accent);padding-top:2px}
+.chapters b{display:block;font-family:var(--display);font-size:1rem;line-height:1.25}
+.chapters span.c{display:block;color:var(--muted);font-size:.86rem;margin-top:4px}
+.secttl{font-family:var(--display);font-size:1.2rem}
+footer{color:var(--muted);font-size:.85rem;max-width:80ch;display:grid;gap:6px}
+footer a{color:var(--accent)}
+
+@media (prefers-reduced-motion: reduce){
+  .anim,.layer,.optrow,.beat path,.chart path.line,.scene,.step,.check i{transition:none!important}
+  .spin,.flow.in,.scanline.in,.spinning svg,.typing::after,.tap.in{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <span class="eyebrow" data-i18n="hdrE">VitalCare.mx · all-in-one version</span>
+      <h1 data-i18n="hdrT">Everything in VitalCare, in One Story</h1>
+      <p data-i18n="hdrL">In this version customers find, buy and follow their VitalCare products on vitalcare.mx, and the website and the VitalCare app share one account.</p>
+    </div>
+    <button class="lang" id="lang" type="button">Español</button>
+  </header>
+
+  <div class="player" id="player">
+    <div class="stage" id="stage">
+
+      <!-- 0 · title -->
+      <article class="scene active" data-n="0">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s0e">A short story · all in VitalCare</span>
+          <h2 data-i18n="s0t">Meet María. She buys everything from VitalCare.</h2>
+          <p data-i18n="s0c">She finds a monitor for her dad, pays on vitalcare.mx and follows it all in the VitalCare app. Your team runs orders, stock and customers from one panel.</p>
+          <div class="startrow">
+            <button class="bigplay" id="bigplay" type="button" aria-label="Play the story"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></button>
+            <div><b data-i18n="s0btn">Play the story</b><br><span class="eyebrow" data-i18n="s0time">About 90 seconds · 10 scenes</span></div>
+          </div>
+        </div>
+        <div class="vis">
+          <div class="collage">
+            <div class="phone cphone">
+              <div class="screen">
+                <div class="sbar"><span>9:41</span><span>●●●</span></div>
+                <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 10.5a1 1 0 001 .8h8.8a1 1 0 001-.8L20 8H6"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span class="badge">1</span></span></div>
+                <div class="pad">
+                  <div class="hero"><div class="monitor"><div class="lcd">118/76</div></div></div>
+                  <div class="h-s" data-i18n="pName">Digital arm monitor with voice YE680B</div>
+                  <span class="btn red" data-i18n="addCart">Add to cart</span>
+                </div>
+              </div>
+            </div>
+            <div class="lightcard" style="right:2%;top:30px;width:220px">
+              <span class="chip ok" style="justify-self:start"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s0ok">Order confirmed</span></span>
+              <b>VC-10482</b>
+              <span class="muted-s" style="font-size:11.5px" data-i18n="s0okd">Paid on vitalcare.mx</span>
+            </div>
+            <div class="card" style="right:6%;bottom:16px;width:220px">
+              <span class="k" data-i18n="s0k">Dad's latest reading</span>
+              <span class="v">118/76 <small style="font-size:.8rem;color:var(--stage-muted)">mmHg</small></span>
+              <span class="k" style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#4EC3E0" stroke-width="2"><path d="M20 12a8 8 0 01-14 5M4 12a8 8 0 0114-5M18 3v4h-4M6 21v-4h4"/></svg><span data-i18n="s0sync">Synced: app and website</span></span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1 · need -->
+      <article class="scene" data-n="1" data-dur="7000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s1e">1 · The need</span>
+          <h2 data-i18n="s1t">María needs a monitor her dad can hear</h2>
+          <p data-i18n="s1c">Her father has high blood pressure and struggles to read small screens. She picks up her phone and searches.</p>
+        </div>
+        <div class="vis">
+          <div class="side">
+            <div class="lightcard persona anim left" data-at="200">
+              <div class="ava">M</div>
+              <div><b>María, 54</b><div class="muted-s" data-i18n="s1role">Takes care of her dad</div></div>
+            </div>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="pad" style="padding-top:28px">
+                <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span data-type data-at="900" data-speed="55" data-i18n="s1q">blood pressure monitor that speaks</span></div>
+                <div class="sugg anim" data-at="3000"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span data-i18n="s1a">blood pressure monitor with voice</span></div>
+                <div class="sugg anim" data-at="3300"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span data-i18n="s1b">talking monitor for older adults</span></div>
+              </div>
+              <span class="tap" data-at="4600" style="left:50%;top:104px"></span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2 · today -->
+      <article class="scene" data-n="2" data-dur="9000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s2e">2 · Today</span>
+          <h2 data-i18n="s2t">Today, buying means leaving VitalCare</h2>
+          <p data-i18n="s2c">The page is slow on phones, some Buy buttons lead nowhere, and every sale happens on another website, so VitalCare never meets its own customer.</p>
+        </div>
+        <div class="vis">
+          <div class="trio">
+            <div class="trio-col anim" data-at="200">
+              <div class="mini">
+                <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="menu"></span></div>
+                <div class="center"><div class="spin"></div><div class="timer" data-count="5.8" data-dec="1" data-suffix=" s" data-at="300" data-cdur="3000">0.0 s</div><div class="muted-s" data-i18n="s2load">Loading…</div></div>
+              </div>
+              <div class="lbl-under" data-i18n="s2l1">Slow on phones</div>
+            </div>
+            <div class="trio-col anim" data-at="3600">
+              <div class="mini">
+                <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="menu"></span></div>
+                <div class="pad"><div class="hero" style="height:80px"><div class="monitor" style="transform:scale(.7)"><div class="lcd">--/--</div></div></div><div class="h-s">GlucoPet</div><span class="btn red" data-i18n="s2buy">Buy</span></div>
+                <span class="tap" data-at="4300" style="left:50%;top:196px"></span>
+                <div class="layer fade" data-at="4800" style="inset:0"><div class="center"><div class="e404">404</div><div class="h-s" data-i18n="s2nf">Page not found</div></div></div>
+              </div>
+              <div class="lbl-under" data-i18n="s2l2">Broken buy links</div>
+            </div>
+            <div class="trio-col anim" data-at="5900">
+              <div class="mini">
+                <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="menu"></span></div>
+                <div class="center exit">
+                  <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>
+                  <div class="h-s" data-i18n="s2leave">Leaving vitalcare.mx…</div>
+                  <span class="chip grey anim" data-at="6800" data-i18n="s2other">another website</span>
+                </div>
+              </div>
+              <div class="lbl-under" data-i18n="s2l3">The sale happens elsewhere</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 · found first -->
+      <article class="scene" data-n="3" data-dur="8500">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s3e">3 · Found first</span>
+          <h2 data-i18n="s3t">VitalCare becomes the answer</h2>
+          <p data-i18n="s3c">The new site describes every product in a way Google and AI assistants understand, so they recommend VitalCare and link straight to it.</p>
+        </div>
+        <div class="vis">
+          <div class="phone">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="who"><span class="dot-ai"></span><span data-i18n="aiName">AI assistant</span></div>
+              <div class="chat">
+                <div class="bub me anim" data-at="300" data-i18n="s3q">Which blood pressure monitor speaks the results?</div>
+                <div class="bub ai anim" data-at="1200"><span data-type data-at="1300" data-speed="24" data-i18n="s3a">The VitalCare YE680B announces your reading out loud and is rechargeable. For two people, look at the VitalCare C02.</span></div>
+                <div class="anim" data-at="4700" style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip src glow" data-at="4900"><svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 10a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>vitalcare.mx</span><span class="chip src">vitalcare.mx/aprende</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="side">
+            <span class="lbl-under anim" data-at="5700" style="text-align:left" data-i18n="s3lab">Search result</span>
+            <div class="lightcard anim" data-at="5800">
+              <span class="muted-s" style="font-size:11px">vitalcare.mx › baumanometros</span>
+              <b style="color:#1a4fa0;font-size:13px;line-height:1.3" data-i18n="s3rt">Digital arm monitor with voice results YE680B | VitalCare</b>
+              <span class="muted-s" style="font-size:11.5px" data-i18n="s3rs">Rechargeable and announces results out loud. How to use it, what's in the box and how to order.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4 · assistant + add to cart -->
+      <article class="scene" data-n="4" data-dur="9000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s4e">4 · Help on the spot</span>
+          <h2 data-i18n="s4t">VitalCare's assistant answers her question</h2>
+          <p data-i18n="s4c">The page opens in under 2.5 seconds. María asks the VitalCare assistant if the monitor suits her dad, and adds it to her cart right from the chat.</p>
+        </div>
+        <div class="vis">
+          <div class="side">
+            <div class="card anim left" data-at="300"><span class="k" data-i18n="s4speedk">Page ready in</span><span class="v">&lt; 2.5 s</span><span class="k" data-i18n="s4speedw">Today it takes 5.8 s</span></div>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 10.5a1 1 0 001 .8h8.8a1 1 0 001-.8L20 8H6"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span class="badge anim pop" data-at="5800">1</span></span></div>
+              <div class="who" style="font-size:11.5px"><span class="dot-vc">V</span><span data-i18n="vcAi">VitalCare assistant</span></div>
+              <div class="chat">
+                <div class="bub me anim" data-at="900" data-i18n="s4q">My dad is 78 and can't read small screens. Will it work for him?</div>
+                <div class="bub ai anim" data-at="2000"><span data-type data-at="2100" data-speed="26" data-i18n="s4a">Yes. The YE680B announces the reading out loud, so he doesn't need to read the screen. It's also rechargeable.</span></div>
+                <div class="prod anim" data-at="4400"><div class="monitor mini-m"><div class="lcd">118/76</div></div><div><b style="font-size:11.5px">VitalCare YE680B</b><span class="btn red sm" style="margin-top:5px" data-i18n="addCart">Add to cart</span></div></div>
+              </div>
+              <span class="tap" data-at="5300" style="left:62%;top:346px"></span>
+              <div class="ltoast anim" data-at="5800"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s4added">Added to cart</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5 · checkout in VitalCare -->
+      <article class="scene" data-n="5" data-dur="9500">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s5e">5 · Checkout in VitalCare</span>
+          <h2 data-i18n="s5t">She pays without leaving VitalCare</h2>
+          <p data-i18n="s5c">She signs in with the same account she uses in the VitalCare app, pays the way she prefers and asks for an invoice.</p>
+        </div>
+        <div class="vis">
+          <div class="phone">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="chip grey" data-i18n="s5secure">Secure checkout</span></div>
+              <div class="pad" style="gap:8px">
+                <span class="chip ok wrap anim" data-at="500" style="justify-self:start"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s5acct">María · same account as the app</span></span>
+                <div class="trow"><span><b>VitalCare YE680B</b><br><span class="muted-s" data-i18n="s5ship">Home delivery</span></span><span class="muted-s">× 1</span></div>
+                <span class="muted-s" style="font-weight:600" data-i18n="s5how">How do you want to pay?</span>
+                <div class="optrow pick" data-at="2200"><i></i><span data-i18n="s5p1">Card · 3 interest-free months</span></div>
+                <div class="optrow"><i></i><span data-i18n="s5p2">Cash at OXXO</span></div>
+                <div class="optrow"><i></i><span data-i18n="s5p3">SPEI bank transfer</span></div>
+                <div class="check" data-at="3300"><i></i><span data-i18n="s5inv">I need an invoice (CFDI)</span></div>
+                <span class="btn red" data-i18n="s5pay">Pay</span>
+              </div>
+              <span class="tap" data-at="2100" style="left:50%;top:222px"></span>
+              <span class="tap" data-at="3200" style="left:14%;top:318px"></span>
+              <span class="tap" data-at="4300" style="left:50%;top:356px"></span>
+              <div class="layer fade" data-at="4900">
+                <div class="center">
+                  <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#1F9D63" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3.2 3.2L17 9"/></svg>
+                  <b style="font-size:15px" data-i18n="s5ok">Order VC-10482 confirmed</b>
+                  <span class="muted-s" data-i18n="s5okd">Invoice sent to your email</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="side">
+            <div class="card anim" data-at="800"><span class="k" data-i18n="s5pk">Payment options</span><div class="pills"><span data-i18n="s5pc">Card</span><span>OXXO</span><span>SPEI</span><span data-i18n="s5pm">Interest-free months</span></div></div>
+            <div class="card anim" data-at="3500"><span class="k" data-i18n="s5ik">Invoice</span><span style="font-weight:600" data-i18n="s5iv">CFDI 4.0, issued automatically</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6 · one account -->
+      <article class="scene" data-n="6" data-dur="9000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s6e">6 · One account</span>
+          <h2 data-i18n="s6t">The order shows up in the VitalCare app too</h2>
+          <p data-i18n="s6c">The website and the app share one account. María follows the delivery in the app, and the monitor is already waiting in her list of devices.</p>
+        </div>
+        <div class="vis">
+          <div class="laptop anim" data-at="200">
+            <div class="lscreen"><div class="lview">
+              <div class="lbar"><i></i><i></i><i></i><span class="url">vitalcare.mx/mi-cuenta</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care</span><span class="muted-s" data-i18n="s6acct">My account · María</span></div>
+              <div class="pad">
+                <span class="h-s" data-i18n="s6orders">My orders</span>
+                <div class="trow"><span><b>VC-10482</b> · VitalCare YE680B<br><span class="muted-s" data-i18n="s6track">Tracking: Estafeta</span></span><span class="swap" data-at="2600"><span class="chip rev a" data-i18n="s6paid">Paid</span><span class="chip ok b" data-i18n="s6shipped">Shipped</span></span></div>
+                <div class="trow" style="opacity:.6"><span><b>VC-09715</b> · <span data-i18n="s6old">Replacement cuff</span></span><span class="chip grey" data-i18n="s6deliv">Delivered</span></div>
+              </div>
+            </div></div>
+            <div class="lbase"></div>
+          </div>
+          <div class="phone sm anim" data-at="900">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care <span style="font:500 10px var(--body);color:var(--scr-muted)">app</span></span></div>
+              <div class="pad" style="gap:9px">
+                <div class="notif anim" data-at="1600"><span class="dot-vc">V</span><div><b style="font-size:11px" data-i18n="s6notif">Your order is on its way</b><div class="muted-s" style="font-size:10.5px">VC-10482 · Estafeta</div></div></div>
+                <div class="steps">
+                  <div class="step" data-at="2000"><i></i><span data-i18n="s6s1">Paid</span></div>
+                  <div class="step" data-at="2600"><i></i><span data-i18n="s6s2">Shipped</span></div>
+                  <div class="step"><i></i><span data-i18n="s6s3">Arrives Thursday</span></div>
+                </div>
+                <span class="muted-s" style="font-weight:600;margin-top:4px" data-i18n="s6dev">My devices</span>
+                <div class="prod anim" data-at="4400" style="padding:6px"><div class="monitor mini-m"><div class="lcd">--/--</div></div><div><b style="font-size:11px">YE680B</b><div class="muted-s" style="font-size:10px" data-i18n="s6ready">Ready to pair when it arrives</div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="sync anim" data-at="1200"><span class="spinning"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 01-14 5M4 12a8 8 0 0114-5M18 3v4h-4M6 21v-4h4"/></svg></span><span data-i18n="s6sync">One account · website and app in sync</span></div>
+        </div>
+      </article>
+
+      <!-- 7 · box arrives -->
+      <article class="scene" data-n="7" data-dur="9500">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s7e">7 · When the box arrives</span>
+          <h2 data-i18n="s7t">The monitor connects in seconds</h2>
+          <p data-i18n="s7c">Because she bought it on VitalCare, the warranty is already active. She scans the QR code on the box, the app pairs the monitor, and Dad's readings start saving.</p>
+        </div>
+        <div class="vis">
+          <div style="display:grid;gap:12px;justify-items:center">
+            <div class="box anim pop" data-at="200">
+              <span class="brand"><b style="color:var(--vc-red)">Vital</b>Care</span>
+              <div class="qr"><svg viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true"><path fill="#1A2A30" d="M0 0h7v7H0zM1 1v5h5V1zM2 2h3v3H2zM14 0h7v7h-7zM15 1v5h5V1zM16 2h3v3h-3zM0 14h7v7H0zM1 15v5h5v-5zM2 16h3v3H2zM9 0h2v2H9zM12 2h1v3h-1zM9 4h2v1H9zM8 8h3v2H8zM13 8h2v1h-2zM17 8h4v1h-4zM9 11h1v3H9zM11 12h3v1h-3zM15 11h2v3h-2zM18 12h3v2h-3zM8 15h2v2H8zM11 16h4v1h-4zM16 16h1v5h-1zM18 17h3v1h-3zM9 18h3v3H9zM13 19h2v2h-2zM19 19h2v2h-2z"/></svg><span class="scanline" data-at="800"></span></div>
+            </div>
+            <div class="lightcard anim" data-at="2200" style="max-width:200px">
+              <span class="chip ok" style="justify-self:start"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s7w">Warranty already active</span></span>
+              <span class="muted-s" style="font-size:11.5px" data-i18n="s7wd">Registered with order VC-10482</span>
+            </div>
+          </div>
+          <div class="phone anim" data-at="3600">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care <span style="font:500 11px var(--body);color:var(--scr-muted)">app</span></span><span class="chip src" data-i18n="s7p">Dad</span></div>
+              <div class="pad">
+                <span class="chip ok anim" data-at="4500" style="justify-self:start"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s7pair">Monitor connected</span></span>
+                <div class="anim" data-at="5400" style="display:grid;gap:2px;margin-top:6px"><span class="muted-s" data-i18n="s7bp">Blood pressure</span><span class="reading">118/76 <span style="font-size:13px;color:var(--scr-muted)">mmHg</span></span></div>
+                <svg class="beat" data-at="5700" viewBox="0 0 220 60" style="width:100%;height:60px" aria-hidden="true"><path d="M0 34 H48 L58 34 L66 10 L76 52 L84 30 L92 34 H130 L140 34 L148 14 L158 50 L166 32 L174 34 H220"/></svg>
+                <span class="muted-s anim" data-at="6200" data-i18n="s7bpm">Pulse 72 bpm</span>
+                <span class="chip src anim" data-at="7000" style="justify-self:start" data-i18n="s7saved">Saved to Dad's history</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 8 · readings on the web -->
+      <article class="scene" data-n="8" data-dur="9000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s8e">8 · App and web in sync</span>
+          <h2 data-i18n="s8t">Dad's readings, on the phone and on the web</h2>
+          <p data-i18n="s8c">Every reading taken with the app also appears in María's account on vitalcare.mx, ready to download as a PDF for the doctor.</p>
+        </div>
+        <div class="vis">
+          <div class="phone sm anim" data-at="200">
+            <div class="screen">
+              <div class="sbar"><span>9:41</span><span>●●●</span></div>
+              <div class="vchead"><span class="wm"><b>Vital</b>Care <span style="font:500 10px var(--body);color:var(--scr-muted)">app</span></span><span class="chip src" data-i18n="s7p">Dad</span></div>
+              <div class="pad">
+                <span class="muted-s" data-i18n="s8new">New reading</span>
+                <span class="reading" style="font-size:26px">122/79</span>
+                <span class="muted-s">mmHg · 7:30</span>
+                <span class="chip src anim" data-at="900" style="justify-self:start"><span data-i18n="s8sent">Synced to vitalcare.mx</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="laptop anim" data-at="600">
+            <div class="lscreen"><div class="lview">
+              <div class="lbar"><i></i><i></i><i></i><span class="url">vitalcare.mx/mi-cuenta/salud</span></div>
+              <div class="pad" style="gap:6px">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="h-s" data-i18n="s8chartT">Dad · blood pressure</span><span class="chip grey" data-i18n="s8ex">Example data</span></div>
+                <svg class="chart" data-at="1500" viewBox="0 0 300 116" style="width:100%;height:100px" aria-hidden="true">
+                  <line class="grid" x1="0" y1="40" x2="300" y2="40"/><line class="grid" x1="0" y1="70" x2="300" y2="70"/><line class="grid" x1="0" y1="100" x2="300" y2="100"/>
+                  <text class="lab" x="2" y="36">130</text><text class="lab" x="2" y="66">120</text><text class="lab" x="2" y="96">110</text>
+                  <path class="line" d="M28 46 L46 37 L64 52 L82 43 L100 55 L118 58 L136 49 L154 61 L172 67 L190 58 L208 70 L226 64 L244 73 L262 64"/>
+                  <circle class="last" data-at="3000" cx="262" cy="64" r="5"/>
+                </svg>
+                <span class="muted-s" style="font-size:10.5px" data-i18n="s8cap">Systolic, last 14 readings</span>
+                <span class="btn dark sm" style="justify-self:start" data-i18n="s8pdf">Download PDF for the doctor</span>
+              </div>
+              <span class="tap" data-at="4600" style="left:24%;top:226px"></span>
+              <div class="ltoast anim" data-at="5300" style="top:34px;bottom:auto"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s8file">Report ready: Dad_October.pdf</span></div>
+            </div></div>
+            <div class="lbase"></div>
+          </div>
+          <div class="sync anim" data-at="900"><span class="spinning"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 01-14 5M4 12a8 8 0 0114-5M18 3v4h-4M6 21v-4h4"/></svg></span><span data-i18n="s8sync">Every reading syncs automatically</span></div>
+        </div>
+      </article>
+
+      <!-- 9 · team -->
+      <article class="scene" data-n="9" data-dur="9500">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s9e">9 · Your team</span>
+          <h2 data-i18n="s9t">Orders, stock and customers in one panel</h2>
+          <p data-i18n="s9c">Your team follows each order from payment to delivery, prints the shipping label, watches stock and sends invoices, all from the VitalCare admin panel.</p>
+        </div>
+        <div class="vis">
+          <div class="win anim" data-at="200">
+            <div class="bar"><i></i><i></i><i></i><span style="margin-left:8px" data-i18n="s9w">VitalCare · Admin panel</span></div>
+            <div class="body">
+              <nav><span data-i18n="s9n1">Dashboard</span><span class="on" data-i18n="s9n2">Orders</span><span data-i18n="s9n3">Shipments</span><span data-i18n="s9n4">Inventory</span><span data-i18n="s9n5">Customers</span><span data-i18n="s9n6">Invoices</span></nav>
+              <main>
+                <div class="kpis">
+                  <div class="kpi"><span class="n" data-count="1284" data-at="600" data-cdur="1600">0</span><span class="t" data-i18n="s9k1">Orders this month</span></div>
+                  <div class="kpi"><span class="n" data-count="38" data-suffix="%" data-at="800" data-cdur="1600">0</span><span class="t" data-i18n="s9k2">Repeat customers</span></div>
+                  <div class="kpi"><span class="n" data-count="2960" data-at="1000" data-cdur="1600">0</span><span class="t" data-i18n="s9k3">Customers using the app</span></div>
+                </div>
+                <span class="muted-s" style="font-size:10.5px;margin-top:-6px" data-i18n="s9ex">Example figures</span>
+                <div class="row anim" data-at="2400"><span class="tt"><b>VC-10482</b> · María G.<br><span class="muted-s">VitalCare YE680B · Estafeta</span></span><span class="swap" data-at="4300"><span class="chip rev a" data-i18n="s9paid">Paid</span><span class="chip ok b"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s9lab">Label printed · shipped</span></span></span></div>
+                <div class="row anim" data-at="5200"><span class="tt"><span data-i18n="s9stock">Stock YE680B</span> · <b class="swap" data-at="5900"><span class="a">214</span><span class="b">213</span></b></span><span class="chip rev" data-i18n="s9low">Low stock: replacement cuffs</span></div>
+              </main>
+            </div>
+            <div class="toast anim" data-at="7000"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="s9toast">CFDI invoice sent to María</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10 · outcome -->
+      <article class="scene" data-n="10" data-dur="9000">
+        <div class="cap">
+          <span class="eyebrow" data-i18n="s10e">10 · What VitalCare gets</span>
+          <h2 data-i18n="s10t">VitalCare sells, serves and knows its customers</h2>
+          <p data-i18n="s10c">This version is Option A plus add-ons from the proposal: the VitalCare online store (C2), the app account on the web (D10), the AI assistant (D1) and the digital warranty (D3).</p>
+          <div class="anim" data-at="3200"><a class="cta" id="cta" href="https://navneetmzn.github.io/vitalcare-website-proposal/" target="_blank" rel="noopener"><span data-i18n="s10cta">Read the full proposal</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+        </div>
+        <div class="vis">
+          <div class="tiles">
+            <div class="tile anim pop" data-at="300"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 10.5a1 1 0 001 .8h8.8a1 1 0 001-.8L20 8H6"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><b data-i18n="s10a">Customers buy on VitalCare</b><span data-i18n="s10as">Card, OXXO, SPEI and interest-free months</span></div>
+            <div class="tile anim pop" data-at="900"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 01-14 5M4 12a8 8 0 0114-5M18 3v4h-4M6 21v-4h4"/></svg><b data-i18n="s10b">One account, web and app</b><span data-i18n="s10bs">Orders, devices and readings in sync</span></div>
+            <div class="tile anim pop" data-at="1500"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><b data-i18n="s10d1">Knows every customer</b><span data-i18n="s10ds1">Orders, warranties and devices in one place</span></div>
+            <div class="tile anim pop" data-at="2100"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><b data-i18n="s10e2">Found on Google and in AI answers</b><span data-i18n="s10es">VitalCare is the source AI assistants quote</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="controls">
+      <button class="cbtn" id="prev" type="button" aria-label="Previous scene"><svg viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7z"/></svg></button>
+      <button class="cbtn main" id="play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" id="playicon"><path d="M7 4l13 8-13 8z"/></svg></button>
+      <button class="cbtn" id="next" type="button" aria-label="Next scene"><svg viewBox="0 0 24 24"><path d="M9 5l8 7-8 7z"/></svg></button>
+      <div class="segs" id="segs"></div>
+      <span class="count" id="count">0 / 10</span>
+    </div>
+  </div>
+
+  <section style="display:grid;gap:12px">
+    <h3 class="secttl" data-i18n="chT">The 10 scenes</h3>
+    <ol class="chapters" id="chapters"></ol>
+  </section>
+
+  <footer>
+    <p data-i18n="ft1">Concept story prepared by Navneet, VitalCare mobile app team, for VitalCare. Screens are illustrations of the planned website and app; product names are real VitalCare models; order numbers, dates, dashboard figures and chart data are examples.</p>
+    <p><a id="ftlink" href="https://navneetmzn.github.io/vitalcare-website-proposal/" target="_blank" rel="noopener" data-i18n="ft2">Read the full proposal</a></p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var ES={
+    hdrE:"VitalCare.mx · versión todo en uno", hdrT:"Todo en VitalCare, en una historia",
+    hdrL:"En esta versión los clientes encuentran, compran y dan seguimiento a sus productos VitalCare en vitalcare.mx, y el sitio y la app VitalCare comparten una sola cuenta.",
+    s0e:"Una historia breve · todo en VitalCare", s0t:"Conoce a María. Compra todo en VitalCare.",
+    s0c:"Encuentra un baumanómetro para su papá, paga en vitalcare.mx y sigue todo en la app VitalCare. Su equipo maneja pedidos, inventario y clientes desde un solo panel.",
+    s0btn:"Ver la historia", s0time:"Unos 90 segundos · 10 escenas", s0ok:"Pedido confirmado", s0okd:"Pagado en vitalcare.mx",
+    s0k:"Última lectura de papá", s0sync:"Sincronizado: app y sitio web",
+    pName:"Baumanómetro digital de brazo con voz YE680B", addCart:"Agregar al carrito", aiName:"Asistente de IA", vcAi:"Asistente VitalCare",
+    s1e:"1 · La necesidad", s1t:"María busca un baumanómetro que su papá pueda escuchar",
+    s1c:"Su papá tiene presión alta y le cuesta leer pantallas pequeñas. Ella toma su celular y busca.",
+    s1role:"Cuida a su papá", s1q:"baumanómetro que hable", s1a:"baumanómetro con voz", s1b:"baumanómetro parlante para adultos mayores",
+    s2e:"2 · Hoy", s2t:"Hoy, comprar significa salir de VitalCare",
+    s2c:"La página es lenta en celulares, algunos botones de compra no llevan a ningún lado y cada venta ocurre en otro sitio, así que VitalCare nunca conoce a su propio cliente.",
+    s2load:"Cargando…", s2l1:"Lento en celulares", s2buy:"Comprar", s2nf:"Página no encontrada", s2l2:"Enlaces de compra rotos",
+    s2leave:"Saliendo de vitalcare.mx…", s2other:"otro sitio web", s2l3:"La venta ocurre en otro lado",
+    s3e:"3 · Aparece primero", s3t:"VitalCare se vuelve la respuesta",
+    s3c:"El nuevo sitio describe cada producto de forma que Google y los asistentes de IA lo entienden, así recomiendan a VitalCare y enlazan directo a su sitio.",
+    s3q:"¿Qué baumanómetro dice los resultados en voz alta?",
+    s3a:"El VitalCare YE680B anuncia la lectura en voz alta y es recargable. Para dos personas, conviene el VitalCare C02.",
+    s3lab:"Resultado de búsqueda", s3rt:"Baumanómetro digital de brazo con voz YE680B | VitalCare",
+    s3rs:"Recargable y anuncia los resultados en voz alta. Cómo usarlo, qué incluye y cómo pedirlo.",
+    s4e:"4 · Ayuda al momento", s4t:"El asistente de VitalCare resuelve su duda",
+    s4c:"La página abre en menos de 2.5 segundos. María le pregunta al asistente de VitalCare si el baumanómetro le sirve a su papá y lo agrega al carrito desde el chat.",
+    s4speedk:"Página lista en", s4speedw:"Hoy tarda 5.8 s",
+    s4q:"Mi papá tiene 78 años y no alcanza a leer pantallas pequeñas. ¿Le sirve?",
+    s4a:"Sí. El YE680B anuncia la lectura en voz alta, así que no necesita leer la pantalla. Además es recargable.",
+    s4added:"Agregado al carrito",
+    s5e:"5 · Pago en VitalCare", s5t:"Paga sin salir de VitalCare",
+    s5c:"Inicia sesión con la misma cuenta que usa en la app VitalCare, paga como prefiere y pide su factura.",
+    s5secure:"Pago seguro", s5acct:"María · misma cuenta que la app", s5ship:"Entrega a domicilio", s5how:"¿Cómo quieres pagar?",
+    s5p1:"Tarjeta · 3 meses sin intereses", s5p2:"Efectivo en OXXO", s5p3:"Transferencia SPEI", s5inv:"Requiero factura (CFDI)", s5pay:"Pagar",
+    s5ok:"Pedido VC-10482 confirmado", s5okd:"Factura enviada a tu correo",
+    s5pk:"Formas de pago", s5pc:"Tarjeta", s5pm:"Meses sin intereses", s5ik:"Factura", s5iv:"CFDI 4.0, emitida automáticamente",
+    s6e:"6 · Una sola cuenta", s6t:"El pedido también aparece en la app VitalCare",
+    s6c:"El sitio y la app comparten una sola cuenta. María sigue la entrega en la app y el baumanómetro ya la espera en su lista de equipos.",
+    s6acct:"Mi cuenta · María", s6orders:"Mis pedidos", s6track:"Rastreo: Estafeta", s6paid:"Pagado", s6shipped:"Enviado",
+    s6old:"Brazalete de repuesto", s6deliv:"Entregado", s6notif:"Tu pedido va en camino", s6s1:"Pagado", s6s2:"Enviado", s6s3:"Llega el jueves",
+    s6dev:"Mis equipos", s6ready:"Listo para vincular cuando llegue", s6sync:"Una cuenta · sitio y app sincronizados",
+    s7e:"7 · Cuando llega la caja", s7t:"El baumanómetro se conecta en segundos",
+    s7c:"Como lo compró en VitalCare, la garantía ya está activa. Escanea el código QR de la caja, la app vincula el baumanómetro y las lecturas de papá empiezan a guardarse.",
+    s7w:"Garantía ya activa", s7wd:"Registrada con el pedido VC-10482", s7p:"Papá", s7pair:"Baumanómetro conectado", s7bp:"Presión arterial",
+    s7bpm:"Pulso 72 lpm", s7saved:"Guardado en el historial de papá",
+    s8e:"8 · App y web sincronizadas", s8t:"Las lecturas de papá, en el celular y en la web",
+    s8c:"Cada lectura tomada con la app también aparece en la cuenta de María en vitalcare.mx, lista para descargar en PDF para el médico.",
+    s8new:"Nueva lectura", s8sent:"Sincronizada con vitalcare.mx", s8chartT:"Papá · presión arterial", s8ex:"Datos de ejemplo",
+    s8cap:"Sistólica, últimas 14 lecturas", s8pdf:"Descargar PDF para el médico", s8file:"Reporte listo: Papa_octubre.pdf",
+    s8sync:"Cada lectura se sincroniza sola",
+    s9e:"9 · Su equipo", s9t:"Pedidos, inventario y clientes en un solo panel",
+    s9c:"Su equipo sigue cada pedido del pago a la entrega, imprime la guía de envío, revisa el inventario y envía facturas, todo desde el panel de administración de VitalCare.",
+    s9w:"VitalCare · Panel de administración", s9n1:"Tablero", s9n2:"Pedidos", s9n3:"Envíos", s9n4:"Inventario", s9n5:"Clientes", s9n6:"Facturas",
+    s9k1:"Pedidos del mes", s9k2:"Clientes recurrentes", s9k3:"Clientes que usan la app", s9ex:"Cifras de ejemplo",
+    s9paid:"Pagado", s9lab:"Guía impresa · enviado", s9stock:"Inventario YE680B", s9low:"Poco stock: brazaletes de repuesto",
+    s9toast:"Factura CFDI enviada a María",
+    s10e:"10 · Lo que gana VitalCare", s10t:"VitalCare vende, atiende y conoce a sus clientes",
+    s10c:"Esta versión es la Opción A más adicionales de la propuesta: la tienda en línea VitalCare (C2), la cuenta de la app en la web (D10), el asistente de IA (D1) y la garantía digital (D3).",
+    s10cta:"Ver la propuesta completa", s10a:"Los clientes compran en VitalCare", s10as:"Tarjeta, OXXO, SPEI y meses sin intereses",
+    s10b:"Una cuenta, web y app", s10bs:"Pedidos, equipos y lecturas sincronizados",
+    s10d1:"Conoce a cada cliente", s10ds1:"Pedidos, garantías y equipos en un solo lugar",
+    s10e2:"Aparece en Google y en las respuestas de IA", s10es:"VitalCare es la fuente que citan los asistentes de IA",
+    chT:"Las 10 escenas",
+    ft1:"Historia del concepto preparada por Navneet, equipo de la app móvil VitalCare, para VitalCare. Las pantallas son ilustraciones del sitio y la app planeados; los nombres de producto son modelos VitalCare reales; los números de pedido, fechas, cifras del tablero y datos de la gráfica son ejemplos.",
+    ft2:"Ver la propuesta completa"
+  };
+  var UI={en:{play:"Play",pause:"Pause",prev:"Previous scene",next:"Next scene",big:"Play the story",lang:"Español",url:"https://navneetmzn.github.io/vitalcare-website-proposal/"},
+          es:{play:"Reproducir",pause:"Pausa",prev:"Escena anterior",next:"Escena siguiente",big:"Ver la historia",lang:"English",url:"https://navneetmzn.github.io/vitalcare-website-proposal/es/"}};
+
+  var scenes=[].slice.call(document.querySelectorAll('.scene'));
+  var N=scenes.length-1;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cur=0,t=0,playing=false,last=null,lang='en';
+  var i18n=[].slice.call(document.querySelectorAll('[data-i18n]'));
+  i18n.forEach(function(el){el._en=el.textContent;});
+  var enByKey={}; i18n.forEach(function(el){ if(!(el.dataset.i18n in enByKey)) enByKey[el.dataset.i18n]=el._en; });
+
+  var segs=document.getElementById('segs'), chapters=document.getElementById('chapters');
+  for(var i=1;i<=N;i++){
+    var b=document.createElement('button'); b.className='seg'; b.type='button'; b.dataset.go=i; b.setAttribute('aria-label','Scene '+i);
+    b.innerHTML='<i><b></b></i>'; segs.appendChild(b);
+    var li=document.createElement('li'), cb=document.createElement('button'); cb.type='button'; cb.dataset.go=i;
+    var cap=scenes[i].querySelector('.cap');
+    cb.innerHTML='<span class="n">'+(i<10?'0'+i:i)+'</span><span><b data-ref="'+cap.querySelector('h2').dataset.i18n+'"></b><span class="c" data-ref="'+cap.querySelector('p').dataset.i18n+'"></span></span>';
+    li.appendChild(cb); chapters.appendChild(li);
+  }
+  function applyLang(){
+    i18n.forEach(function(el){ var v=lang==='es'&&ES[el.dataset.i18n]!=null?ES[el.dataset.i18n]:el._en; if(el.hasAttribute('data-type')) el.dataset.full=v; else el.textContent=v; });
+    [].forEach.call(document.querySelectorAll('[data-ref]'),function(el){ var k=el.dataset.ref; el.textContent=lang==='es'&&ES[k]!=null?ES[k]:enByKey[k]; });
+    document.documentElement.lang=lang;
+    var u=UI[lang]; document.getElementById('lang').textContent=u.lang;
+    document.getElementById('prev').setAttribute('aria-label',u.prev); document.getElementById('next').setAttribute('aria-label',u.next);
+    document.getElementById('bigplay').setAttribute('aria-label',u.big);
+    document.getElementById('cta').href=u.url; document.getElementById('ftlink').href=u.url;
+    ui(); render();
+  }
+  function dur(i){ return +(scenes[i].dataset.dur||0); }
+  function fmt(v,dec){ return v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}); }
+  function render(){
+    var s=scenes[cur], vt=reduce?1e9:t;
+    [].forEach.call(s.querySelectorAll('[data-at]'),function(el){
+      var at=+el.dataset.at, on=vt>=at;
+      if(el.hasAttribute('data-type')){
+        var full=el.dataset.full||el._en||'', sp=+(el.dataset.speed||45), n=on?Math.min(full.length,Math.floor((vt-at)/sp)):0;
+        el.textContent=full.slice(0,n); el.classList.toggle('typing',on&&n<full.length);
+      } else if(el.hasAttribute('data-count')){
+        var tgt=+el.dataset.count, dec=+(el.dataset.dec||0), cd=+(el.dataset.cdur||1400), p=on?Math.min(1,(vt-at)/cd):0;
+        p=1-Math.pow(1-p,3); el.textContent=fmt(tgt*p,dec)+(el.dataset.suffix||'');
+      } else el.classList.toggle('in',on);
+    });
+    [].forEach.call(segs.children,function(b,idx){ var n=idx+1, w=n<cur?1:(n===cur?Math.min(1,t/dur(cur)):0); b.firstChild.firstChild.style.width=(w*100)+'%'; });
+  }
+  function ui(){
+    var u=UI[lang], atEnd=(cur===N&&t>=dur(N));
+    document.getElementById('play').setAttribute('aria-label',playing?u.pause:u.play);
+    document.getElementById('playicon').innerHTML=playing?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':(atEnd?'<path d="M12 5V2L7 6l5 4V7a6 6 0 11-6 6H4a8 8 0 108-8z"/>':'<path d="M7 4l13 8-13 8z"/>');
+    document.getElementById('count').textContent=cur+' / '+N;
+    [].forEach.call(chapters.querySelectorAll('button'),function(b){ b.classList.toggle('now',+b.dataset.go===cur); });
+  }
+  function go(i){
+    i=Math.max(0,Math.min(N,i));
+    scenes[cur].classList.remove('active'); cur=i; scenes[cur].classList.add('active'); t=0;
+    render(); ui();
+  }
+  function play(){ if(cur===0||(cur===N&&t>=dur(N))) go(1); playing=true; last=null; ui(); }
+  function pause(){ playing=false; ui(); }
+  function frame(now){
+    if(playing&&cur>0){
+      var dt=last==null?0:Math.min(100,now-last); t+=dt;
+      if(t>=dur(cur)){ if(cur<N){ go(cur+1); } else { t=dur(cur); playing=false; ui(); } }
+      render();
+    }
+    last=now; requestAnimationFrame(frame);
+  }
+  document.getElementById('play').addEventListener('click',function(){ playing?pause():play(); });
+  document.getElementById('bigplay').addEventListener('click',play);
+  document.getElementById('prev').addEventListener('click',function(){ go(cur>1?cur-1:1); });
+  document.getElementById('next').addEventListener('click',function(){ go(cur<N?cur+1:N); });
+  segs.addEventListener('click',function(e){ var b=e.target.closest('[data-go]'); if(b){ go(+b.dataset.go); playing=true; ui(); } });
+  chapters.addEventListener('click',function(e){ var b=e.target.closest('[data-go]'); if(b){ go(+b.dataset.go); playing=true; ui(); document.getElementById('player').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); } });
+  document.getElementById('lang').addEventListener('click',function(){ lang=lang==='en'?'es':'en'; applyLang(); });
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest&&e.target.closest('button,a,input')&&(e.key===' '||e.key==='Enter')) return;
+    if(e.key===' '){ e.preventDefault(); playing?pause():play(); }
+    else if(e.key==='ArrowRight'){ go(cur<N?cur+1:N); }
+    else if(e.key==='ArrowLeft'){ go(cur>1?cur-1:1); }
+  });
+  var h=(location.hash||'').toLowerCase();
+  lang=h==='#es'?'es':(h==='#en'?'en':((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'));
+  applyLang();
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
